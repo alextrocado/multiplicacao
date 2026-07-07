@@ -1,38 +1,126 @@
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="theme-color" content="#4f46e5" />
+<title>Multiplicação — Vamos treinar! 🧮</title>
+<meta name="description" content="App para treinar o algoritmo da multiplicação no 1.º ciclo, com quadradinho do transporte e muito feedback." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AE%3C/text%3E%3C/svg%3E" />
+<link rel="stylesheet" href="styles.css" />
 
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matemática Criativa - Adição</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Comic Neue', cursive;
-            background-color: #fefce8;
-        }
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        input[type=number] {
-            -moz-appearance: textfield;
-        }
-    </style>
-<script type="importmap">
-{
-  "imports": {
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
-  }
-}
-</script>
-</head>
-<body>
-    <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-</body>
-</html>
+<div id="app">
+  <!-- ============ CABEÇALHO ============ -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-icon" aria-hidden="true">🧮</span>
+      <div class="brand-text">
+        <h1>Multiplicação</h1>
+        <p>Vamos treinar!</p>
+      </div>
+    </div>
+
+    <div class="stats" aria-label="Pontuação">
+      <div class="stat" title="Pontos">
+        <span class="stat-icon">⭐</span>
+        <span class="stat-val" id="statPoints">0</span>
+        <span class="stat-lbl">pontos</span>
+      </div>
+      <div class="stat" title="Contas seguidas certas">
+        <span class="stat-icon">🔥</span>
+        <span class="stat-val" id="statStreak">0</span>
+        <span class="stat-lbl">seguidas</span>
+      </div>
+      <div class="stat" title="Transportes perfeitos">
+        <span class="stat-icon">🏅</span>
+        <span class="stat-val" id="statStars">0</span>
+        <span class="stat-lbl">medalhas</span>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <button id="btnSound" class="icon-btn" title="Ligar/desligar som" aria-label="Som">🔊</button>
+    </div>
+  </header>
+
+  <!-- ============ DEFINIÇÕES (na própria janela) ============ -->
+  <section id="settings" class="settings-panel" aria-label="Definições">
+    <div class="settings-head">
+      <h2>⚙️ Definições</h2>
+      <button id="btnToggleSettings" class="link-btn" aria-expanded="true">esconder ▲</button>
+    </div>
+
+    <div class="settings-body" id="settingsBody">
+      <div class="set-row">
+        <span class="set-label">Multiplicar por</span>
+        <div class="chip-row" id="multiplierChips">
+          <button class="chip" data-mult="1">Unidades</button>
+          <button class="chip" data-mult="2">Dezenas</button>
+        </div>
+      </div>
+
+      <div class="set-row">
+        <span class="set-label">Tabuadas até</span>
+        <div class="chip-row chips-small" id="maxChips">
+          <button class="chip" data-max="2">×2</button>
+          <button class="chip" data-max="3">×3</button>
+          <button class="chip" data-max="4">×4</button>
+          <button class="chip" data-max="5">×5</button>
+          <button class="chip" data-max="6">×6</button>
+          <button class="chip" data-max="7">×7</button>
+          <button class="chip" data-max="8">×8</button>
+          <button class="chip" data-max="9">×9</button>
+        </div>
+      </div>
+
+      <p class="set-note" id="levelNote">Nível: 2 algarismos × unidade (até ×5)</p>
+    </div>
+  </section>
+
+  <!-- ============ TABULEIRO DA CONTA ============ -->
+  <main class="stage">
+    <div class="board-wrap">
+      <div id="board" class="board" aria-label="Conta de multiplicar"></div>
+    </div>
+
+    <!-- Balão de feedback -->
+    <div id="feedback" class="feedback" role="status" aria-live="polite">
+      <span class="fb-emoji" id="fbEmoji">👋</span>
+      <span class="fb-text" id="fbText">Preenche os quadradinhos e depois carrega em <b>Verificar</b>.</span>
+    </div>
+
+    <!-- Legenda passo-a-passo -->
+    <div id="stepCaption" class="step-caption" hidden></div>
+
+    <!-- ============ BOTÕES ============ -->
+    <div class="controls">
+      <button id="btnCheck" class="btn btn-primary">✅ Verificar</button>
+      <button id="btnHint" class="btn btn-soft">💡 Dica</button>
+      <button id="btnSteps" class="btn btn-soft">👣 Passo a passo</button>
+      <button id="btnNew" class="btn btn-ghost">🔄 Nova conta</button>
+    </div>
+
+    <!-- ============ TECLADO ============ -->
+    <div id="keypad" class="keypad" aria-label="Teclado de números">
+      <button class="key" data-key="1">1</button>
+      <button class="key" data-key="2">2</button>
+      <button class="key" data-key="3">3</button>
+      <button class="key" data-key="4">4</button>
+      <button class="key" data-key="5">5</button>
+      <button class="key" data-key="6">6</button>
+      <button class="key" data-key="7">7</button>
+      <button class="key" data-key="8">8</button>
+      <button class="key" data-key="9">9</button>
+      <button class="key key-wide" data-key="back">⌫ Apagar</button>
+      <button class="key" data-key="0">0</button>
+      <button class="key key-next" data-key="next">➡️</button>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <span>Feito para o 1.º ciclo • o quadradinho do <b>transporte</b> está sempre lá 🟨</span>
+    <span class="credit">Desenvolvido por Alexandre Trocado — <a href="mailto:mail@alexandretrocado.com">mail@alexandretrocado.com</a></span>
+  </footer>
+</div>
+
+<!-- Camada para o confetti / festa -->
+<div id="party" class="party" aria-hidden="true"></div>
+
+<script src="app.js"></script>
